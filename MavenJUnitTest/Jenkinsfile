@@ -15,20 +15,20 @@ pipeline{
              stage('Validate')
         {
             steps{
-                bat 'mvn -f MavenJunitTest validate'
+                bat 'mvn -f MavenJUnitTest validate'
             }
         }
         stage('Compile')
         {
             steps{
-                bat 'mvn -f  MavenJunitTest compile'
+                bat 'mvn -f  MavenJUnitTest compile'
             }
         }
         stage('sonar analysis'){
             steps{
                 withSonarQubeEnv('sonar-server'){
                     withMaven(maven:'Maven'){
-                        bat 'mvn -f MavenJunitTest sonar:sonar'
+                        bat 'mvn -f MavenJUnitTest sonar:sonar'
                     }
                 }
             }
@@ -37,31 +37,31 @@ pipeline{
         stage('Test')
         {
             steps{
-                bat 'mvn -f  MavenJunitTest test'
+                bat 'mvn -f  MavenJUnitTest test'
             }
         }
         stage('Package')
         {
             steps{
-                bat 'mvn -f  MavenJunitTest package'
+                bat 'mvn -f  MavenJUnitTest package'
             }
         }
         stage('Verify')
         {
             steps{
-                bat 'mvn -f MavenJunitTest verify'
+                bat 'mvn -f MavenJUnitTest verify'
             }
         }
         stage('Install')
         {
             steps{
-                bat 'mvn -f  MavenJunitTest install '
+                bat 'mvn -f  MavenJUnitTest install '
             }
         }
       stage('Artifactory')
     {
       steps{
-        archiveArtifacts artifacts:'MavenJunitTest/target/*.jar',followSymlinks:false
+        archiveArtifacts artifacts:'MavenJUnitTest/target/*.jar',followSymlinks:false
       }
     }
         
@@ -73,7 +73,7 @@ pipeline{
           spec: '''{
           "files": [
             {
-              "pattern": "MavenJunitTest/target/*.jar",
+              "pattern": "MavenJUnitTest/target/*.jar",
               "target": "art-doc-dev-loc"
             }
          ]
