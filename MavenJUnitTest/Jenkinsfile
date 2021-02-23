@@ -1,0 +1,106 @@
+pipeline{
+    agent any
+   
+    tools { 
+        maven 'maven'
+        jdk 'jdk'
+    }
+        stages{
+            stage('Git-Checkout')
+            {
+                steps{
+                     git 'https://github.com/sravanin15/HelloworldMaven.git'
+                }
+            }
+             stage('Validate')
+        {
+            steps{
+                bat 'mvn -f helloWorld/pom.xml validate'
+            }
+        }
+        stage('Compile')
+        {
+            steps{
+                bat 'mvn -f  helloWorld/pom.xml compile'
+            }
+        }
+        stage('sonar analysis'){
+            steps{
+                withSonarQubeEnv('sonarserver'){
+                    withMaven(maven:'maven'){
+                        bat 'mvn -f helloWorld sonar:sonar'
+                    }
+                }
+            }
+
+        }
+         stage("Quality gate") {
+            steps {
+                waitForQualityGate abortPipeline: true
+            }
+        }
+        stage('Test')
+        {
+            steps{
+                bat 'mvn -f  helloWorld/pom.xml test'
+            }
+        }
+        stage('Package')
+        {
+            steps{
+                bat 'mvn -f  helloWorld/pom.xml package'
+            }
+        }
+        stage('Verify')
+        {
+            steps{
+                bat 'mvn -f helloWorld/pom.xml verify'
+            }
+        }
+        stage('Install')
+        {
+            steps{
+                bat 'mvn -f  helloWorld/pom.xml install '
+            }
+        }
+        
+    stage('Deploy-To-Artifactory')
+    {
+      steps{
+        rtUpload(
+          serverId:'artifactory-server',
+          spec: '''{
+          "files": [
+            {
+              "pattern": "helloWorld/target/*.jar",
+              "target": "art-doc-dev-loc"
+            }
+         ]
+    }''',
+           buildName: 'holyFrog',
+    buildNumber: '42'
+)
+  }
+}   
+            
+           
+        }
+    post {  
+         always {  
+             echo 'This will always run'  
+         }  
+         success {  
+             echo 'This will run only if successful'  
+         }  
+         failure {  
+             mail bcc: '', body: "<b>Example</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> URL de build: ${env.BUILD_URL}", cc: '', charset: 'UTF-8', from: 'sravaninuthanapati15@gmail.com', mimeType: 'text/html', replyTo: '', subject: "ERROR CI: Project name -> ${env.JOB_NAME}", to: "sravaninuthanapati15@gmail.com";  
+         }  
+         unstable {  
+             echo 'This will run only if the run was marked as unstable'  
+         }  
+         changed {  
+             echo 'This will run only if the state of the Pipeline has changed'  
+             echo 'For example, if the Pipeline was previously failing but is now successful'  
+         }  
+     }      
+}
