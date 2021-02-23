@@ -15,7 +15,7 @@ pipeline{
              stage('Validate')
         {
             steps{
-                bat 'mvn -f MavenJUnitTest validate'
+                bat 'mvn -f MavenJUnitTest clean validate'
             }
         }
         stage('Compile')
