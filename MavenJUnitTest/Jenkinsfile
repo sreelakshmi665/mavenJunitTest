@@ -58,6 +58,12 @@ pipeline{
                 bat 'mvn -f  MavenJunitTest install '
             }
         }
+      stage('Artifactory')
+    {
+      steps{
+        archiveArtifacts artifacts:'MavenJunitTest/target/*.jar',followSymlinks:false
+      }
+    }
         
     stage('Deploy-To-Artifactory')
     {
