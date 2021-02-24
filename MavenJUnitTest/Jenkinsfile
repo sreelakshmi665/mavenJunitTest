@@ -127,7 +127,27 @@ pipeline{
 )
   }
 }   
-    }         
+    } 
+             stage('Download-To-Artifactory')
+    {
+      steps{
+           script{
+                        FAILED_STAGE=env.STAGE_NAME
+        rtDownload(
+          serverId:'artifactory-server',
+          spec: '''{
+          "files": [
+            {
+              "pattern": "art-doc-dev-loc/MavenJUnitTest-0.0.1-SNAPSHOT.jar",
+              "target": "C:/Users/vscr9/.m2/repository/"
+            }
+         ]
+    }''',
+          
+)
+  }
+}   
+    }   
            
         }
     post {  
