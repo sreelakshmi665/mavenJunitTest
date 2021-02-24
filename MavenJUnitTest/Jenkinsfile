@@ -29,7 +29,7 @@ pipeline{
             steps{
                  script{
                         FAILED_STAGE=env.STAGE_NAME
-                bat 'mvn -f  MavenJUnitTest compile'
+                bat 'mn -f  MavenJUnitTest compile'
                  }
             }
         }
